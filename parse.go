@@ -6,16 +6,35 @@ import (
 	"fmt"
 )
 
-func (c *Config) parse(body []byte) {
+const separator = "/"
+
+func (c *Config) check (key string, value interface{}) {
+	//fmt.Println(key, value)
+	if _, ok := c.Fields.Load(key); !ok {
+		c.Fields.Store(key, 1)
+		fmt.Printf("New field: %s \n", key)
+	}
+}
+
+func (c *Config) deep (b map[string]interface{}, prefix string) {
+	for key, value := range b {
+		if b, ok := value.(map[string]interface{}); ok {
+			c.deep(b,fmt.Sprintf("%s%s%s",prefix,separator,key))
+			continue
+		}
+		c.check(fmt.Sprintf("%s%s%s",prefix,separator,key),value)
+	}
+}
+
+func (c *Config) parse (body []byte) {
 	data := map[string]interface{}{}
 	dec := json.NewDecoder(bytes.NewBuffer(body))
 	dec.Decode(&data)
-	for key, _ := range data {
-		if _, ok := c.Fields.Load(key); ok {
+	for key, value := range data {
+		if b, ok := value.(map[string]interface{}); ok {
+			c.deep(b,key)
 			continue
 		}
-		c.Fields.Store(key, 1)
-		fmt.Printf("New field: %s \n", key)
-
+		c.check(key,value)
+		}
 	}
-}
