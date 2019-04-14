@@ -1,0 +1,11 @@
+version: '3'
+services:
+    parsefield:
+        build: .
+        container_name: parsefield
+        ports:
+            - '8000:8000'
+        environment:
+            - "PARSEFIELD_LISTEN=:8000"
+            - "PARSEFIELD_SEP= -> "
+
