@@ -4,9 +4,12 @@ Tool for parse JSON-like logs for collecting unique fields. It is useful when yo
 API consist:
 
 ```json
-/v1/json/
-/v1/mjson/
-/v1/fileds/
+/v1/json/   - collector for single json request
+/v1/mjson/  - collector for batch json request
+/v1/fileds/ - Print all fields 
+/v1/events/ - Print all events
+/v1/events/:logname/:eventid - Drop event
+/v1/fields/:field - Drop field
 ```
 
 ## Deploy:
@@ -44,5 +47,11 @@ curl -X POST -d '[{"process_name": "calc.exe", "process_path":"C:\\windows\\syst
 curl 127.0.0.1:8000/v1/fields/
 ```
 
-By default separator between to nested structs is "->", but you can change it with environment
+### All unique events
 
+```sh
+curl 127.0.0.1:8000/v1/events/
+```
+
+
+By default separator between to nested structs is "->", but you can change it with environment

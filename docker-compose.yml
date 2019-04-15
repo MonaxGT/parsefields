@@ -1,6 +1,7 @@
 version: '3'
 services:
     parsefield:
+        restart: unless-stopped
         build: .
         container_name: parsefield
         ports:
@@ -8,4 +9,16 @@ services:
         environment:
             - "PARSEFIELD_LISTEN=:8000"
             - "PARSEFIELD_SEP= -> "
+            - "PARSEFIELD_DB_URL=cproto://reindexer:6534/"
+        depends_on:
+            - reindexer
 
+    reindexer:
+        restart: unless-stopped
+        image: reindexer/reindexer
+        container_name: reindexer
+        volumes:
+            - ../docker-persistence/reindexer/db:/db
+        ports:
+            - '9088:9088'
+            - '6534:6534'
