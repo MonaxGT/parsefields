@@ -18,7 +18,8 @@ type Database interface {
 	Open(url string) error
 	InsertFields(field *Fields) error
 	InsertEvents(event *Events) error
-	Restore() ([]*Fields, error)
+	RestoreFields() ([]*Fields, error)
+	RestoreEvents() ([]*Events, error)
 	DeleteEvents(logname string, eventid int32) error
 	DeleteFields(field string) error
 }

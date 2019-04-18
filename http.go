@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
-	"strconv"
 
 	"github.com/MonaxGT/parsefields/storage"
 	"github.com/julienschmidt/httprouter"
@@ -72,13 +72,25 @@ func (c *Config) eventsHandler(w http.ResponseWriter, r *http.Request, _ httprou
 	fmt.Fprintln(w, fmt.Sprintf(strings.Join(events, "\n")))
 }
 
-func (c *Config) RestoreDB() error {
-	t, err := c.DB.Restore()
+func (c *Config) RestoreDBF() error {
+	t, err := c.DB.RestoreFields()
 	if err != nil {
 		return err
 	}
 	for k := range t {
 		c.Fields.Store(t[k].Field, 1)
+	}
+	return nil
+}
+
+func (c *Config) RestoreDBE() error {
+	t, err := c.DB.RestoreEvents()
+	if err != nil {
+		return err
+	}
+	for k := range t {
+		str := fmt.Sprintf("%s - %s", t[k].LogName, t[k].EventID)
+		c.Events.Store(str, 1)
 	}
 	return nil
 }
@@ -100,7 +112,7 @@ func Init(separator string, dbType string, dbURL string) (*Config, error) {
 		}
 		db = reindexer
 	default:
-		log.Println("Alert method doesn't choosen")
+		log.Fatalln("error: you should choose db")
 	}
 	return &Config{
 		Fields:    &fields,
@@ -142,7 +154,11 @@ func (c *Config) fieldDropHandler(w http.ResponseWriter, r *http.Request, ps htt
 
 func (c *Config) Serve(addr string) error {
 	if c.DB != nil {
-		err := c.RestoreDB()
+		err := c.RestoreDBF()
+		if err != nil {
+			return err
+		}
+		err = c.RestoreDBE()
 		if err != nil {
 			return err
 		}

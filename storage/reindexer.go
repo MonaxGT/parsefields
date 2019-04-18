@@ -38,7 +38,7 @@ func (r *Reindexer) InsertEvents(e *Events) error {
 	return err
 }
 
-func (r *Reindexer) Restore() ([]*Fields, error) {
+func (r *Reindexer) RestoreFields() ([]*Fields, error) {
 	iter := r.DB.Query(r.NamespaceField).
 		Exec()
 	defer iter.Close()
@@ -48,6 +48,22 @@ func (r *Reindexer) Restore() ([]*Fields, error) {
 	var F []*Fields
 	for iter.Next() {
 		elem := iter.Object().(*Fields)
+		F = append(F, elem)
+	}
+	return F, nil
+
+}
+
+func (r *Reindexer) RestoreEvents() ([]*Events, error) {
+	iter := r.DB.Query(r.NamespaceField).
+		Exec()
+	defer iter.Close()
+	if err := iter.Error(); err != nil {
+		return nil, err
+	}
+	var F []*Events
+	for iter.Next() {
+		elem := iter.Object().(*Events)
 		F = append(F, elem)
 	}
 	return F, nil
