@@ -26,14 +26,14 @@ type Config struct {
 	DB        storage.Database
 }
 
-func (c *Config) jsonHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (c *Config) JSONHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Can't read the request body", http.StatusBadRequest)
+		http.Error(w, "can't read the request body", http.StatusBadRequest)
 		return
 	}
 	if len(body) == 0 {
-		http.Error(w, "No data provided", http.StatusBadRequest)
+		http.Error(w, "no data provided", http.StatusBadRequest)
 		return
 	}
 	c.parse(body)
@@ -42,17 +42,17 @@ func (c *Config) jsonHandler(w http.ResponseWriter, r *http.Request, _ httproute
 func (c *Config) mjsonHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Can't read the request body", http.StatusBadRequest)
+		http.Error(w, "can't read the request body", http.StatusBadRequest)
 		return
 	}
 	if len(body) == 0 {
-		http.Error(w, "No data provided", http.StatusBadRequest)
+		http.Error(w, "no data provided", http.StatusBadRequest)
 		return
 	}
 	c.parseMulti(body)
 }
 
-func (c *Config) fieldsHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (c *Config) FieldsHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var fields []string
 	c.Fields.Range(func(key, value interface{}) bool {
 		fields = append(fields, fmt.Sprintf("%v", key))
@@ -89,7 +89,7 @@ func (c *Config) RestoreDBE() error {
 		return err
 	}
 	for k := range t {
-		str := fmt.Sprintf("%s - %s", t[k].LogName, t[k].EventID)
+		str := fmt.Sprintf("%s - %d", t[k].LogName, t[k].EventID)
 		c.Events.Store(str, 1)
 	}
 	return nil
@@ -112,7 +112,7 @@ func Init(separator string, dbType string, dbURL string) (*Config, error) {
 		}
 		db = reindexer
 	default:
-		log.Fatalln("error: you should choose db")
+		log.Println("You didn't choose DB, the API works in short mode")
 	}
 	return &Config{
 		Fields:    &fields,
@@ -129,11 +129,13 @@ func (c *Config) eventDropHandler(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	str := fmt.Sprintf("%s - %s", ps.ByName("logname"), ps.ByName("eventid"))
 	c.Fields.Delete(str)
-	eventID, err := strconv.ParseUint(ps.ByName("eventid"), 10, 64)
-	err = c.DB.DeleteEvents(ps.ByName("logname"), int32(eventID))
-	if err != nil {
-		http.Error(w, "Can't delete record", http.StatusInternalServerError)
-		return
+	if c.DB != nil {
+		eventID, err := strconv.ParseUint(ps.ByName("eventid"), 10, 64)
+		err = c.DB.DeleteEvents(ps.ByName("logname"), int32(eventID))
+		if err != nil {
+			http.Error(w, "Can't delete record", http.StatusInternalServerError)
+			return
+		}
 	}
 	fmt.Fprintln(w, "Delete")
 }
@@ -144,10 +146,12 @@ func (c *Config) fieldDropHandler(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 	c.Fields.Delete(ps.ByName("field"))
-	err := c.DB.DeleteFields(ps.ByName("field"))
-	if err != nil {
-		http.Error(w, "Can't delete record", http.StatusInternalServerError)
-		return
+	if c.DB != nil {
+		err := c.DB.DeleteFields(ps.ByName("field"))
+		if err != nil {
+			http.Error(w, "Can't delete record", http.StatusInternalServerError)
+			return
+		}
 	}
 	fmt.Fprintln(w, "Delete")
 }
@@ -164,9 +168,9 @@ func (c *Config) Serve(addr string) error {
 		}
 	}
 	router := httprouter.New()
-	router.POST("/v1/json/", c.jsonHandler)
+	router.POST("/v1/json/", c.JSONHandler)
 	router.POST("/v1/mjson/", c.mjsonHandler)
-	router.GET("/v1/fields/", c.fieldsHandler)
+	router.GET("/v1/fields/", c.FieldsHandler)
 	router.GET("/v1/events/", c.eventsHandler)
 	router.GET("/v1/events/:logname/:eventid", c.eventDropHandler)
 	router.GET("/v1/fields/:field", c.fieldDropHandler)
