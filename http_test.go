@@ -1,14 +1,15 @@
 package parsefield
 
 import (
-	"testing"
-	"net/http"
-	"encoding/json"
-	"net/http/httptest"
-	"github.com/julienschmidt/httprouter"
 	"bytes"
-	"sync"
+	"encoding/json"
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"sync"
+	"testing"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 type Body struct {
@@ -16,8 +17,6 @@ type Body struct {
 	Path string `json:"path"`
 	Name string `json:"name"`
 }
-
-
 
 func TestJSONHandler(t *testing.T) {
 	var fields sync.Map
@@ -36,7 +35,10 @@ func TestJSONHandler(t *testing.T) {
 		Name: "gopher",
 	}
 	b := new(bytes.Buffer)
-	json.NewEncoder(b).Encode(body)
+	err := json.NewEncoder(b).Encode(body)
+	if err != nil {
+		t.Fatal(err)
+	}
 	req, err := http.NewRequest("POST", "http://127.0.0.1:8000/v1/json/", b)
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {

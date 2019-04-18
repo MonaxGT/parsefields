@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/MonaxGT/parsefields"
+	parsefield "github.com/MonaxGT/parsefields"
 	"github.com/peterbourgon/ff"
 )
 
@@ -20,8 +20,10 @@ func main() {
 		dbURL      = fs.String("db-url", "cproto://127.0.0.1:6534/", "Storage URL")
 	)
 
-	ff.Parse(fs, os.Args[1:], ff.WithEnvVarPrefix("PARSEFIELD"))
-
+	err := ff.Parse(fs, os.Args[1:], ff.WithEnvVarPrefix("PARSEFIELD"))
+	if err != nil {
+		log.Fatal(err)
+	}
 	c, err := parsefield.Init(*separator, *dbType, *dbURL)
 	if err != nil {
 		log.Fatal(err)

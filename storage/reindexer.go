@@ -95,7 +95,7 @@ func (r *Reindexer) DeleteFields(field string) error {
 func (r *Reindexer) DeleteEvents(logname string, eventid int32) error {
 	query := r.DB.Query(r.NamespaceEvent).
 		WhereString("LogName", reindexer.EQ, logname).
-		WhereInt32("EventID", reindexer.EQ, int32(eventid)).
+		WhereInt32("EventID", reindexer.EQ, eventid).
 		Limit(10).
 		Offset(0).
 		Exec()
