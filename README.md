@@ -1,6 +1,6 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/MonaxGT/parsefields)](https://goreportcard.com/report/github.com/lastbackend/lastbackend)
-[![GoDoc](https://godoc.org/github.com/MonaxGT/parsefields?status.png)](https://godoc.org/github.com/lastbackend/lastbackend)
-[![Travis](https://travis-ci.org/MonaxGT/parsefields.svg?branch=master)](https://travis-ci.org/lastbackend/lastbackend)
+[![GoDoc](https://godoc.org/github.com/MonaxGT/parsefields?status.png)](https://godoc.org/github.com/MonaxGT/parsefields)
+[![Build Status](https://travis-ci.com/MonaxGT/gomalshare.svg?branch=master)](https://travis-ci.com/MonaxGT/gomalshare)
+[![Go Report Card](https://goreportcard.com/badge/github.com/MonaxGT/parsefields)](https://goreportcard.com/report/github.com/MonaxGT/parsefields)
 
 # parsefields
 
@@ -9,12 +9,14 @@ By default separator between to nested structs is "->", but you can change it wi
 
 API consist:
 
--  /v1/json/   - collector for single json request
--  /v1/mjson/  - collector for batch json request
--  /v1/fileds/ - Print all fields 
--  /v1/events/ - Print all events
--  /v1/events/:logname/:eventid - Drop event
--  /v1/fields/:field - Drop field
+```
+-  /v1/json/
+-  /v1/mjson/
+-  /v1/fileds/
+-  /v1/events/
+-  /v1/events/:logname/:eventid
+-  /v1/fields/:field
+```
 
 P.S. additionally info about all new events/fields will be show in stdout.
 
