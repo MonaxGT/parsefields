@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/dc9f7432a97a4d5296045487e1db44f1)](https://app.codacy.com/app/MonaxGT/parsefields?utm_source=github.com&utm_medium=referral&utm_content=MonaxGT/parsefields&utm_campaign=Badge_Grade_Dashboard)
 [![Go Report Card](https://goreportcard.com/badge/github.com/MonaxGT/parsefields)](https://goreportcard.com/report/github.com/MonaxGT/parsefields)
 [![GoDoc](https://godoc.org/github.com/MonaxGT/parsefields?status.png)](https://godoc.org/github.com/MonaxGT/parsefields)
 [![Travis](https://travis-ci.org/MonaxGT/parsefields.svg?branch=master)](https://travis-ci.org/MonaxGT/parsefields)
