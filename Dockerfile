@@ -12,7 +12,7 @@ RUN apk add --no-cache git mercurial \
                               -installsuffix static \
                               -o /parsefields
 
-FROM alpine:latest
+FROM alpine:3.9
 
 RUN apk --update --no-cache add ca-certificates curl \
   && adduser -h /app -D app \

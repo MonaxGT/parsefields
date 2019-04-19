@@ -9,16 +9,16 @@ By default separator between to nested structs is "->", but you can change it wi
 
 API consist:
 
-- /v1/json/   - collector for single json request
-- /v1/mjson/  - collector for batch json request
-- /v1/fileds/ - Print all fields 
-- /v1/events/ - Print all events
-- /v1/events/:logname/:eventid - Drop event
-- /v1/fields/:field - Drop field
+-  /v1/json/   - collector for single json request
+-  /v1/mjson/  - collector for batch json request
+-  /v1/fileds/ - Print all fields 
+-  /v1/events/ - Print all events
+-  /v1/events/:logname/:eventid - Drop event
+-  /v1/fields/:field - Drop field
 
 P.S. additionally info about all new events/fields will be show in stdout.
 
-## Deploy:
+## Deploy
 
 ```sh
 docker build . -t parsefield
@@ -31,7 +31,7 @@ or
 docker-compose -p 8000:8000 -d up 
 ```
 
-## Usage:
+## Usage
 
 ### Push new log for parse
 
