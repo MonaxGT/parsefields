@@ -141,14 +141,15 @@ func (c *Config) eventDropHandler(w http.ResponseWriter, r *http.Request, ps htt
 		http.Error(w, "No data provided", http.StatusBadRequest)
 		return
 	}
-	str := fmt.Sprintf("%s - %s", ps.ByName("logname"), ps.ByName("eventid"))
-	c.Fields.Delete(str)
+	eventID, err := strconv.ParseUint(ps.ByName("eventid"), 10, 64)
+	if err != nil {
+		http.Error(w, "Can't decode eventid number, please use numbers", http.StatusBadRequest)
+		return
+	}
+	str := fmt.Sprintf("%s - %d", ps.ByName("logname"), int32(eventID))
+	c.Events.Delete(str)
+	log.Printf("Deleted event: %s \n",str)
 	if c.DB != nil {
-		eventID, err := strconv.ParseUint(ps.ByName("eventid"), 10, 64)
-		if err != nil {
-			http.Error(w, "Can't decode eventid number, please use numbers", http.StatusBadRequest)
-			return
-		}
 		err = c.DB.DeleteEvents(ps.ByName("logname"), int32(eventID))
 		if err != nil {
 			http.Error(w, "Can't delete record", http.StatusInternalServerError)
@@ -164,6 +165,7 @@ func (c *Config) fieldDropHandler(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 	c.Fields.Delete(ps.ByName("field"))
+	log.Printf("Deleted field: %s \n",ps.ByName("field"))
 	if c.DB != nil {
 		err := c.DB.DeleteFields(ps.ByName("field"))
 		if err != nil {
