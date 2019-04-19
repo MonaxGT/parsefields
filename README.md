@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/MonaxGT/parsefields)](https://goreportcard.com/report/github.com/lastbackend/lastbackend)
+[![Go Report Card](https://goreportcard.com/badge/github.com/MonaxGT/parsefields)](https://goreportcard.com/report/github.com/MonaxGT/parsefields)
 [![GoDoc](https://godoc.org/github.com/MonaxGT/parsefields?status.png)](https://godoc.org/github.com/lastbackend/lastbackend)
 [![Travis](https://travis-ci.org/MonaxGT/parsefields.svg?branch=master)](https://travis-ci.org/lastbackend/lastbackend)
 
