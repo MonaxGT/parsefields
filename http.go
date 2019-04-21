@@ -83,7 +83,7 @@ func (c *Config) eventsHandler(w http.ResponseWriter, r *http.Request, _ httprou
 	fmt.Fprintln(w, fmt.Sprintf(strings.Join(events, "\n")))
 }
 
-// RestoreDBE restore database fields from DB
+// RestoreDBF restore database fields from DB
 func (c *Config) RestoreDBF() error {
 	t, err := c.DB.RestoreFields()
 	if err != nil {
@@ -176,7 +176,7 @@ func (c *Config) fieldDropHandler(w http.ResponseWriter, r *http.Request, ps htt
 	fmt.Fprintln(w, "Delete")
 }
 
-// Server is started API service
+// Serve is started API service
 func (c *Config) Serve(addr string) error {
 	if c.DB != nil {
 		err := c.RestoreDBF()
