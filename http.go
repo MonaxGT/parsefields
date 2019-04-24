@@ -176,6 +176,33 @@ func (c *Config) fieldDropHandler(w http.ResponseWriter, r *http.Request, ps htt
 	fmt.Fprintln(w, "Delete")
 }
 
+func (c *Config) eventsBodyHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	if ps.ByName("logname") == "" && ps.ByName("eventid") == "" {
+		http.Error(w, "No data provided", http.StatusBadRequest)
+		return
+	}
+	eventID, err := strconv.ParseUint(ps.ByName("eventid"), 10, 64)
+	if err != nil {
+		http.Error(w, "Can't decode eventid number, please use numbers", http.StatusBadRequest)
+		return
+	}
+	if c.DB != nil {
+		body,err := c.DB.GetByEvent(ps.ByName("logname"), int32(eventID))
+		if err != nil {
+			http.Error(w, "Can't find record", http.StatusInternalServerError)
+			return
+		}
+		if body == nil {
+			fmt.Fprintln(w,"Not Found")
+			return
+		}
+		fmt.Fprintln(w, string(body))
+		return
+	}
+	fmt.Fprintln(w,"Database isn't initiate. Please use database for this option")
+	}
+
+
 // Serve is started API service
 func (c *Config) Serve(addr string) error {
 	if c.DB != nil {
@@ -193,9 +220,9 @@ func (c *Config) Serve(addr string) error {
 	router.POST("/v1/mjson/", c.mjsonHandler)
 	router.GET("/v1/fields/", c.FieldsHandler)
 	router.GET("/v1/events/", c.eventsHandler)
-	router.GET("/v1/events/:logname/:eventid", c.eventDropHandler)
-	router.GET("/v1/fields/:field", c.fieldDropHandler)
+	router.GET("/v1/events/:logname/:eventid", c.eventsBodyHandler)
+	router.DELETE("/v1/events/:logname/:eventid", c.eventDropHandler)
+	router.DELETE("/v1/fields/:field", c.fieldDropHandler)
 	log.Printf("Listening on %s", addr)
 	return http.ListenAndServe(addr, router)
-
 }
