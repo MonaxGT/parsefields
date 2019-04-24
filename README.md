@@ -11,12 +11,13 @@ By default separator between to nested structs is "->", but you can change it wi
 API consist:
 
 ```
--  /v1/json/
--  /v1/mjson/
--  /v1/fileds/
--  /v1/events/
--  /v1/events/:logname/:eventid
--  /v1/fields/:field
+-  POST /v1/json/
+-  POST /v1/mjson/
+-  GET /v1/fileds/
+-  GET  /v1/events/
+-  GET /v1/events/:logname/:eventid
+-  DELETE /v1/events/:logname/:eventid
+-  DELETE /v1/fields/:field
 ```
 
 P.S. additionally info about all new events/fields will be show in stdout.
@@ -62,9 +63,15 @@ curl 127.0.0.1:8000/v1/fields/
 curl 127.0.0.1:8000/v1/events/
 ```
 
-### Delete events,fields
+### Show body of event
 
 ```sh
-curl 127.0.0.1:8000/v1/events/Sysmon/999 - delete events with logname Sysmon and eventId 999
-curl 127.0.0.1:8000/v1/fields/key - delete field with name key
+curl 127.0.0.1:8000/v1/events/Sysmon/999 
+```
+
+### Delete events, fields
+
+```sh
+curl -X DELETE 127.0.0.1:8000/v1/events/Sysmon/999 - delete events with logname Sysmon and eventId 999
+curl -X DELETE 127.0.0.1:8000/v1/fields/key - delete field with name key
 ```

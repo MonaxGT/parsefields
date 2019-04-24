@@ -11,7 +11,7 @@ type Events struct {
 	ID      int64                  `reindex:"id,,pk"`
 	LogName string                 `reindexer:"logname"`
 	EventID int32                  `reindexer:"eventid"`
-	Data    map[string]interface{} `reindexer:"data"`
+	Data    map[string]interface{} `json:"data" reindexer:"data"`
 }
 
 type Database interface {
@@ -22,4 +22,5 @@ type Database interface {
 	RestoreEvents() ([]*Events, error)
 	DeleteEvents(logname string, eventid int32) error
 	DeleteFields(field string) error
+	GetByEvent(logname string, eventid int32) ([]byte,error)
 }
