@@ -45,7 +45,8 @@ func (c *Config) JSONHandler(w http.ResponseWriter, r *http.Request, _ httproute
 	}
 }
 
-func (c *Config) mjsonHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+// MJSONHandler collector multiply JSON request
+func (c *Config) MJSONHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "can't read the request body", http.StatusBadRequest)
@@ -148,7 +149,7 @@ func (c *Config) eventDropHandler(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	str := fmt.Sprintf("%s - %d", ps.ByName("logname"), int32(eventID))
 	c.Events.Delete(str)
-	log.Printf("Deleted event: %s \n",str)
+	log.Printf("Deleted event: %s \n", str)
 	if c.DB != nil {
 		err = c.DB.DeleteEvents(ps.ByName("logname"), int32(eventID))
 		if err != nil {
@@ -165,7 +166,7 @@ func (c *Config) fieldDropHandler(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 	c.Fields.Delete(ps.ByName("field"))
-	log.Printf("Deleted field: %s \n",ps.ByName("field"))
+	log.Printf("Deleted field: %s \n", ps.ByName("field"))
 	if c.DB != nil {
 		err := c.DB.DeleteFields(ps.ByName("field"))
 		if err != nil {
@@ -187,21 +188,20 @@ func (c *Config) eventsBodyHandler(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 	if c.DB != nil {
-		body,err := c.DB.GetByEvent(ps.ByName("logname"), int32(eventID))
+		body, err := c.DB.GetByEvent(ps.ByName("logname"), int32(eventID))
 		if err != nil {
 			http.Error(w, "Can't find record", http.StatusInternalServerError)
 			return
 		}
 		if body == nil {
-			fmt.Fprintln(w,"Not Found")
+			fmt.Fprintln(w, "Not Found")
 			return
 		}
 		fmt.Fprintln(w, string(body))
 		return
 	}
-	fmt.Fprintln(w,"Database isn't initiate. Please use database for this option")
-	}
-
+	fmt.Fprintln(w, "Database isn't initiate. Please use database for this option")
+}
 
 // Serve is started API service
 func (c *Config) Serve(addr string) error {
@@ -217,7 +217,7 @@ func (c *Config) Serve(addr string) error {
 	}
 	router := httprouter.New()
 	router.POST("/v1/json/", c.JSONHandler)
-	router.POST("/v1/mjson/", c.mjsonHandler)
+	router.POST("/v1/mjson/", c.MJSONHandler)
 	router.GET("/v1/fields/", c.FieldsHandler)
 	router.GET("/v1/events/", c.eventsHandler)
 	router.GET("/v1/events/:logname/:eventid", c.eventsBodyHandler)

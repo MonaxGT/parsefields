@@ -2,6 +2,7 @@
 [![GoDoc](https://godoc.org/github.com/MonaxGT/parsefields?status.png)](https://godoc.org/github.com/MonaxGT/parsefields)
 [![Build Status](https://travis-ci.com/MonaxGT/gomalshare.svg?branch=master)](https://travis-ci.com/MonaxGT/gomalshare)
 [![Go Report Card](https://goreportcard.com/badge/github.com/MonaxGT/parsefields)](https://goreportcard.com/report/github.com/MonaxGT/parsefields)
+[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/MonaxGT)
 
 # parsefields
 

@@ -115,7 +115,7 @@ func (r *Reindexer) DeleteEvents(logname string, eventid int32) error {
 	return err
 }
 
-func (r *Reindexer) GetByEvent (logname string, eventid int32) ([]byte,error) {
+func (r *Reindexer) GetByEvent(logname string, eventid int32) ([]byte, error) {
 	query := r.DB.Query(r.NamespaceEvent).
 		WhereString("LogName", reindexer.EQ, logname).
 		WhereInt32("EventID", reindexer.EQ, eventid).
@@ -124,16 +124,16 @@ func (r *Reindexer) GetByEvent (logname string, eventid int32) ([]byte,error) {
 		Exec()
 	defer query.Close()
 	if err := query.Error(); err != nil {
-		return nil,err
+		return nil, err
 	}
 	var err error
 	for query.Next() {
 		elem := query.Object().(*Events)
 		b, err := json.Marshal(elem.Data)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
-		return b,err
+		return b, err
 	}
-	return nil,err
+	return nil, err
 }
