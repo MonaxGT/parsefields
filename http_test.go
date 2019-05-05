@@ -3,13 +3,15 @@ package parsefield
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"github.com/MonaxGT/parsefields/storage"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"sync"
 	"testing"
+	"time"
 
-	"fmt"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -19,6 +21,49 @@ type Body struct {
 	Name    string `json:"name"`
 	EventID uint32 `json:"event_id,omitempty"`
 	LogName string `json:"event_log_name,omitempty"`
+}
+
+type MockReindexer struct {
+	mockInsertFields func() error
+	mockRestoreEvents func() error
+}
+
+func (s *MockReindexer) Open(url string) error {
+	panic("implement me")
+}
+
+func (s *MockReindexer) InsertEvents(event *storage.Events) error {
+	panic("implement me")
+}
+
+func (s *MockReindexer) RestoreFields() ([]*storage.Fields, error) {
+	panic("implement me")
+}
+
+func (s *MockReindexer) RestoreEvents() ([]*storage.Events, error) {
+	if s.mockRestoreEvents != nil {
+		return nil,s.mockRestoreEvents()
+	}
+	return nil,nil
+}
+
+func (s *MockReindexer) DeleteEvents(logname string, eventid int32) error {
+	panic("implement me")
+}
+
+func (s *MockReindexer) DeleteFields(field string) error {
+	panic("implement me")
+}
+
+func (s *MockReindexer) GetByEvent(logname string, eventid int32) ([]byte, error) {
+	panic("implement me")
+}
+
+func (s *MockReindexer) InsertFields(field *storage.Fields) error {
+	if s.mockInsertFields != nil {
+		return s.mockInsertFields()
+	}
+	return nil
 }
 
 func TestJSONHandler(t *testing.T) {
@@ -343,4 +388,51 @@ func TestEventsBodyHandler(t *testing.T) {
 			t.Errorf("can't read the request body")
 		}
 	}
+}
+
+func TestServe(t *testing.T) {
+	c := Config{}
+	go func() {
+		for {
+			select {
+			case <-time.After(2 * time.Second):
+				return
+			default:
+				err := c.Serve(":8123")
+				if err != nil {
+					t.Error(err)
+				}
+			}
+		}
+	}()
+
+}
+
+func TestDB (t *testing.T) {
+	var db storage.Database
+	var fields sync.Map
+	var events sync.Map
+	ms := &MockReindexer{
+		mockInsertFields: func() error {
+			return nil
+		},
+		mockRestoreEvents: func() error {
+			return nil
+		},
+	}
+	db = ms
+	c := Config{
+		Fields: &fields,
+		Events: &events,
+		DB: db,
+	}
+	err := c.DB.InsertFields(&storage.Fields{})
+	if err!= nil {
+		t.Error(err)
+	}
+	_, err = c.DB.RestoreEvents()
+	if err!= nil {
+		t.Error(err)
+	}
+
 }
