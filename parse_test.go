@@ -17,6 +17,11 @@ func TestParse(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	body = []byte(`"event_id":1,"event_log_name":"sysmon"`)
+	err = c.parse(body)
+	if err == nil {
+		t.Error(err)
+	}
 
 }
 
@@ -30,6 +35,11 @@ func TestParseMulti (t *testing.T) {
 	body := []byte(`[{"event_id":1,"event_log_name":"sysmon"},{"event_id":2,"event_log_name":"security"}]`)
 	err := c.parseMulti(body)
 	if err != nil {
+		t.Error(err)
+	}
+	body = []byte(`^"event_id":1,"event_log_name":"sysmon"`)
+	err = c.parse(body)
+	if err == nil {
 		t.Error(err)
 	}
 }

@@ -3,7 +3,6 @@ package parsefield
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/MonaxGT/parsefields/storage"
 	"io/ioutil"
 	"net/http"
@@ -26,6 +25,8 @@ type Body struct {
 type MockReindexer struct {
 	mockInsertFields func() error
 	mockRestoreEvents func() error
+	mockRestoreFields func() error
+	mockGetByEvent func() error
 }
 
 func (s *MockReindexer) Open(url string) error {
@@ -37,7 +38,10 @@ func (s *MockReindexer) InsertEvents(event *storage.Events) error {
 }
 
 func (s *MockReindexer) RestoreFields() ([]*storage.Fields, error) {
-	panic("implement me")
+	if s.mockRestoreFields != nil {
+		return nil,s.mockRestoreFields()
+	}
+	return nil,nil
 }
 
 func (s *MockReindexer) RestoreEvents() ([]*storage.Events, error) {
@@ -56,7 +60,10 @@ func (s *MockReindexer) DeleteFields(field string) error {
 }
 
 func (s *MockReindexer) GetByEvent(logname string, eventid int32) ([]byte, error) {
-	panic("implement me")
+	if s.mockGetByEvent != nil {
+		return nil,s.mockGetByEvent()
+	}
+	return nil,nil
 }
 
 func (s *MockReindexer) InsertFields(field *storage.Fields) error {
@@ -145,7 +152,6 @@ func TestMJSONHandler(t *testing.T) {
 			Name: "tester",
 		},
 	}
-	fmt.Println(body)
 	b := new(bytes.Buffer)
 	err := json.NewEncoder(b).Encode(body)
 	if err != nil {
@@ -185,6 +191,7 @@ func TestMJSONHandler(t *testing.T) {
 	if rbody == nil {
 		t.Errorf("server return nil data")
 	}
+
 }
 
 func TestEventHandler(t *testing.T) {
@@ -408,7 +415,7 @@ func TestServe(t *testing.T) {
 
 }
 
-func TestDB (t *testing.T) {
+func TestDB(t *testing.T) {
 	var db storage.Database
 	var fields sync.Map
 	var events sync.Map
@@ -431,6 +438,18 @@ func TestDB (t *testing.T) {
 		t.Error(err)
 	}
 	_, err = c.DB.RestoreEvents()
+	if err!= nil {
+		t.Error(err)
+	}
+	_, err = c.DB.RestoreFields()
+	if err!= nil {
+		t.Error(err)
+	}
+	_, err = c.DB.RestoreFields()
+	if err!= nil {
+		t.Error(err)
+	}
+	_, err = c.DB.GetByEvent("sysmon",1)
 	if err!= nil {
 		t.Error(err)
 	}
